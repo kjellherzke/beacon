@@ -1,0 +1,39 @@
+{
+  "title": "General Info",
+  "nodes": [
+    {
+      "name": "First Node",
+      "generation": 0,
+      "x": 200,
+      "y": 0,
+      "nodes": [
+        {
+          "name": "First Child Node",
+          "generation": 1,
+          "x": 0,
+          "y": 100
+        },
+        {
+          "name": "Second Child Node",
+          "generation": 1,
+          "x": 200,
+          "y": 100,
+          "nodes": [
+            {
+              "name": "First of the Second Child of the First Node",
+              "generation": 2,
+              "x": 300,
+              "y": 200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Second Node",
+      "generation": 0,
+      "x": 400,
+      "y": 0
+    }
+  ]
+}
