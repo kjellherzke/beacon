@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Open Sans";
+}
+
+html {
+  color: theme("colors.primary");
+  background-color: theme("colors.base");
+}
+
+h1 {
+  @apply text-4xl font-bold mb-4 mt-2;
+}
+
+h2 {
+  @apply text-3xl font-bold mb-3 mt-1;
+}
+
+h3 {
+  @apply text-2xl font-bold mb-2 mt-0.5;
+}
+
+a {
+  text-decoration: underline;
+}
+
+a[data-footnote-backref=""] {
+  text-decoration: none;
+}
+
+a[data-footnote-ref="true"] {
+  text-decoration: none;
+}
+
+p {
+  @apply mb-1.5;
+}
+
+pre,
+code {
+  @apply px-[0.5rem] py-[0.2rem] rounded-lg bg-border;
+}
+
+pre code {
+  @apply bg-transparent rounded-none p-0;
+}
+
+table {
+  @apply border rounded-full;
+}
+
+td,
+th {
+  @apply p-1.5;
+}
+
+tr {
+  @apply mb-4;
+}
