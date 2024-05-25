@@ -68,6 +68,7 @@ function NodeLine({ data, from }: { data: PathNode; from: PathNode }) {
         y2={data.y + data.height / 2}
         strokeWidth={4}
         stroke={generationColor(data.generation)}
+        strokeDasharray={data.generation > 1 ? "5,5" : "none"}
       />
       )),
     </svg>

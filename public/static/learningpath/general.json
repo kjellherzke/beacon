@@ -2,32 +2,32 @@
   "title": "General Info",
   "nodes": [
     {
-      "name": "First Node",
-      "x": 200,
+      "name": "Welcome, this is a note.",
+      "x": 0,
       "y": 0,
       "nodes": [
         {
-          "name": "First Child Node",
-          "x": 0,
-          "y": 100
+          "name": "I am a child.",
+          "x": 50,
+          "y": 75
         },
         {
-          "name": "Second Child Node",
-          "x": 900,
-          "y": 100,
+          "name": "Me too.",
+          "x": 200,
+          "y": 75,
           "nodes": [
             {
-              "name": "First of the Second Child of the First Node",
-              "x": 300,
-              "y": 900
+              "name": "I am the child of a child.",
+              "x": 200,
+              "y": 200
             }
           ]
         }
       ]
     },
     {
-      "name": "Second Node",
-      "x": 900,
+      "name": "I am a second note.",
+      "x": 400,
       "y": 0
     }
   ]
