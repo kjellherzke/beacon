@@ -1,4 +1,4 @@
-import { ReactPropTypes, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // Idea is to have a router for all files under that path and then display them:
 // - Nodes can have subnodes
@@ -24,13 +24,7 @@ interface PathNode {
 }
 
 const generationColor = (generation: number) =>
-  generation == 0
-    ? "#D9D9D9"
-    : generation == 1
-      ? "#999999"
-      : generation == 2
-        ? "#636363"
-        : "#404040";
+  generation == 0 ? "#F8E16C" : generation == 1 ? "#00C49A" : "#156064";
 
 function SingleNode({ data }: { data: PathNode }) {
   return (
@@ -50,6 +44,8 @@ function SingleNode({ data }: { data: PathNode }) {
 }
 
 function NodeLine({ data, from }: { data: PathNode; from: PathNode }) {
+  const gradientId = `gradient-${Math.random().toString(36).substring(2)}`;
+
   return (
     <svg
       style={{
@@ -61,16 +57,27 @@ function NodeLine({ data, from }: { data: PathNode; from: PathNode }) {
         zIndex: -1,
       }}
     >
+      <defs>
+        <linearGradient gradientUnits="userSpaceOnUse" id={gradientId}>
+          <stop offset="20%" stopColor={generationColor(from.generation)} />
+          <stop
+            offset="50%"
+            stopColor={generationColor(from.generation + 1)}
+            opacity={0.2}
+          />
+          <stop offset="80%" stopColor={generationColor(data.generation)} />
+        </linearGradient>
+      </defs>
       <line
         x1={from.x + from.width / 2}
         y1={from.y + from.height / 2}
         x2={data.x + data.width / 2}
         y2={data.y + data.height / 2}
         strokeWidth={4}
-        stroke={generationColor(data.generation)}
+        // stroke={generationColor(data.generation)}
+        stroke={`url(#${gradientId})`}
         strokeDasharray={data.generation > 1 ? "5,5" : "none"}
       />
-      )),
     </svg>
   );
 }
@@ -91,9 +98,17 @@ function Node({ data, from }: { data: PathNode; from: PathNode | null }) {
   );
 }
 
-function PathRenderer({ path, ...props }: { path: Path | null }) {
+function PathRenderer({
+  path,
+  width,
+  height,
+}: {
+  path: Path | null;
+  width: number;
+  height: number;
+}) {
   return (
-    <div className="absolute w-full h-full" {...props}>
+    <div className="absolute w-full h-full" style={{ width, height }}>
       {useMemo(
         () =>
           path?.nodes?.map((node, i, elements) => (
@@ -173,7 +188,8 @@ export default function LearnPathRenderer() {
       </h3>
       <PathRenderer
         path={path}
-        style={{ width: maxDimensions.maxX, height: maxDimensions.maxY }}
+        width={maxDimensions.maxX}
+        height={maxDimensions.maxY}
       />
     </div>
   );

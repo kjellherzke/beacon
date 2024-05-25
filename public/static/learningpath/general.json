@@ -28,7 +28,14 @@
     {
       "name": "I am a second note.",
       "x": 400,
-      "y": 0
+      "y": 0,
+      "nodes": [
+        {
+          "name": "I am a second note.",
+          "x": 400,
+          "y": 100
+        }
+      ]
     }
   ]
 }
