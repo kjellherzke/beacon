@@ -8,19 +8,19 @@ import { useEffect, useRef, useState } from "react";
 import hljs from "highlight.js";
 // import "highlight.js/styles/atom-one-dark.css";
 
-function SyntaxHighlightedCode({ children, className }) {
-  const ref = useRef(null);
+function SyntaxHighlightedCode({ ...props }) {
+  const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    if (ref.current && className?.includes("lang-")) {
+    if (ref.current && props.className?.includes("lang-")) {
       hljs.highlightElement(ref.current);
       ref.current.removeAttribute("data-highlighted");
     }
-  }, [className]);
+  }, [props.className]);
 
   return (
-    <code ref={ref} className={className}>
-      {children}
+    <code ref={ref} className={props.className}>
+      {props.children}
     </code>
   );
 }
@@ -48,7 +48,7 @@ export default function LearnPathMarkdownPreviewer({
     const absolutePath = "/public/static/learningpath/" + relativePath;
 
     if (modules[absolutePath])
-      modules[absolutePath]().then((mod) => setMarkdown(mod.default));
+      modules[absolutePath]().then((mod: any) => setMarkdown(mod.default));
     else setMarkdown(errorMessage);
   }, [markdownUrl]);
 
