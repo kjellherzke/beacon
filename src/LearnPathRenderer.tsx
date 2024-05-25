@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { ReactPropTypes, useEffect, useMemo, useState } from "react";
 
 // Idea is to have a router for all files under that path and then display them:
 // - Nodes can have subnodes
@@ -49,7 +49,7 @@ function SingleNode({ data }: { data: PathNode }) {
   );
 }
 
-function NodeLine({ data }: { data: PathNode }) {
+function NodeLine({ data, from }: { data: PathNode; from: PathNode }) {
   return (
     <svg
       style={{
@@ -61,49 +61,56 @@ function NodeLine({ data }: { data: PathNode }) {
         zIndex: -1,
       }}
     >
-      {useMemo(
-        () =>
-          data.nodes?.map((node, i) => (
-            <line
-              key={i}
-              x1={data.x + data.width / 2}
-              y1={data.y + data.height / 2}
-              x2={node.x + node.width / 2}
-              y2={node.y + node.height / 2}
-              strokeWidth={4}
-              stroke={generationColor(data.generation)}
-            />
-          )),
-        [],
-      )}
+      <line
+        x1={from.x + from.width / 2}
+        y1={from.y + from.height / 2}
+        x2={data.x + data.width / 2}
+        y2={data.y + data.height / 2}
+        strokeWidth={4}
+        stroke={generationColor(data.generation)}
+      />
+      )),
     </svg>
   );
 }
 
-function Node({ data }: { data: PathNode }) {
+function Node({ data, from }: { data: PathNode; from: PathNode | null }) {
   return (
     <div>
       <SingleNode data={data} />
-      <div>
-        {useMemo(
-          () =>
-            data.nodes?.map((node, i) => (
-              <div key={i}>
-                <Node data={node} />
-              </div>
-            )),
-          [],
-        )}
-        <NodeLine data={data} />
-      </div>
+      {useMemo(
+        () =>
+          data.nodes?.map((node, i) => (
+            <Node key={i} data={node} from={data} />
+          )),
+        [],
+      )}
+      {from && <NodeLine data={data} from={from} />}
+    </div>
+  );
+}
+
+function PathRenderer({ path, ...props }: { path: Path | null }) {
+  return (
+    <div className="absolute w-full h-full" {...props}>
+      {useMemo(
+        () =>
+          path?.nodes?.map((node, i, elements) => (
+            <Node key={i} data={node} from={elements[i - 1] || null} />
+          )),
+        [path],
+      )}
     </div>
   );
 }
 
 export default function LearnPathRenderer() {
   const [path, setPath] = useState<Path | null>(null);
+  const [maxDimensions, setMaxDimensions] = useState<{
+    maxX: number;
+    maxY: number;
+  }>({ maxX: 0, maxY: 0 });
 
-  // WORKING CODE FOR GETTING ALL OF DIRECTORY
   useEffect(() => {
     const recursiveChangeNodes = (
       nodes: PathNode[],
@@ -119,54 +126,54 @@ export default function LearnPathRenderer() {
           : undefined,
       }));
 
-    const manipulatePath = (path: Path | null): Path | null => {
-      if (!path) return null;
-      return path.nodes
-        ? { ...path, nodes: recursiveChangeNodes(path.nodes, 0) }
-        : path;
+    const calculateMaxDimensions = (
+      nodes: PathNode[] | undefined,
+    ): { maxX: number; maxY: number } | null => {
+      if (!nodes) return null;
+
+      let maxX = 0;
+      let maxY = 0;
+
+      const updateDimensions = (node: PathNode) => {
+        if (node.x + node.width > maxX) {
+          maxX = node.x + node.width;
+        }
+        if (node.y + node.height > maxY) {
+          maxY = node.y + node.height;
+        }
+        node.nodes?.forEach(updateDimensions);
+      };
+
+      nodes.forEach(updateDimensions);
+      return { maxX, maxY };
     };
 
-    const modules = import.meta.glob(`/public/static/learningpath/*.json`);
+    const manipulatePath = (path: Path | null): Path | null => {
+      if (!path) return null;
+      if (!path.nodes) return path;
+
+      const pathNew = { ...path, nodes: recursiveChangeNodes(path.nodes, 0) };
+      const dimensions = calculateMaxDimensions(pathNew.nodes);
+      if (dimensions) setMaxDimensions(dimensions);
+      return pathNew;
+    };
+
+    // TODO: This has to be changed later...
+    const modules = import.meta.glob("/public/static/learningpath/*.json");
     for (const path in modules) {
       modules[path]().then((mod) => setPath(manipulatePath(mod as Path)));
     }
   }, []);
 
   return (
-    <div className="h-[30rem] w-[50rem] overflow-scroll border-2 border-secondary border-opacity-20 rounded-2xl p-5 select-none">
-      <div className="relative w-full h-full">
-        {useMemo(
-          () =>
-            path?.nodes?.map((node, i, elements) => (
-              <div key={i}>
-                <Node key={i} data={node} />
-                {elements.length - 1 > i && (
-                  <svg
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      top: 0,
-                      left: 0,
-                      position: "absolute",
-                      zIndex: -1,
-                    }}
-                  >
-                    <line
-                      key={i}
-                      x1={node.x + node.width / 2}
-                      y1={node.y + node.height / 2}
-                      x2={elements[i + 1].x + elements[i + 1].width / 2}
-                      y2={elements[i + 1].y + elements[i + 1].height / 2}
-                      strokeWidth={4}
-                      stroke={generationColor(node.generation)}
-                    />
-                  </svg>
-                )}
-              </div>
-            )),
-          [path],
-        )}
-      </div>
+    <div className="h-[40rem] w-[50rem] overflow-scroll border-2 border-secondary border-opacity-20 rounded-2xl p-5 pt-16 select-none relative">
+      <h3 className="text-center text-2xl font-semibold text-secondary absolute left-0 right-0 top-2">
+        {path?.title}
+      </h3>
+      <PathRenderer
+        path={path}
+        style={{ width: maxDimensions.maxX, height: maxDimensions.maxY }}
+      />
     </div>
   );
 }
