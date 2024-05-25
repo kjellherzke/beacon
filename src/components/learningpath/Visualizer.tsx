@@ -20,15 +20,23 @@ interface PathNode {
   y: number;
   width: number;
   height: number;
+  markdownUrl: string;
   nodes?: PathNode[];
 }
 
 const generationColor = (generation: number) =>
   generation == 0 ? "#F8E16C" : generation == 1 ? "#00C49A" : "#156064";
 
-function SingleNode({ data }: { data: PathNode }) {
+function SingleNode({
+  data,
+  setMarkdownUrl,
+}: {
+  data: PathNode;
+  setMarkdownUrl: (url: string) => void;
+}) {
   return (
     <div
+      onClick={() => setMarkdownUrl(data.markdownUrl)}
       className="py-2 px-4 border-2 rounded-2xl bg-background hover:scale-105 hover:cursor-pointer transition-all whitespace-nowrap"
       style={{
         position: "absolute",
@@ -82,14 +90,27 @@ function NodeLine({ data, from }: { data: PathNode; from: PathNode }) {
   );
 }
 
-function Node({ data, from }: { data: PathNode; from: PathNode | null }) {
+function Node({
+  data,
+  from,
+  setMarkdownUrl,
+}: {
+  data: PathNode;
+  from: PathNode | null;
+  setMarkdownUrl: (url: string) => void;
+}) {
   return (
     <div>
-      <SingleNode data={data} />
+      <SingleNode setMarkdownUrl={setMarkdownUrl} data={data} />
       {useMemo(
         () =>
           data.nodes?.map((node, i) => (
-            <Node key={i} data={node} from={data} />
+            <Node
+              setMarkdownUrl={setMarkdownUrl}
+              key={i}
+              data={node}
+              from={data}
+            />
           )),
         [],
       )}
@@ -100,10 +121,12 @@ function Node({ data, from }: { data: PathNode; from: PathNode | null }) {
 
 function PathRenderer({
   path,
+  setMarkdownUrl,
   width,
   height,
 }: {
   path: Path | null;
+  setMarkdownUrl: (url: string) => void;
   width: number;
   height: number;
 }) {
@@ -112,7 +135,12 @@ function PathRenderer({
       {useMemo(
         () =>
           path?.nodes?.map((node, i, elements) => (
-            <Node key={i} data={node} from={elements[i - 1] || null} />
+            <Node
+              setMarkdownUrl={setMarkdownUrl}
+              key={i}
+              data={node}
+              from={elements[i - 1] || null}
+            />
           )),
         [path],
       )}
@@ -120,7 +148,11 @@ function PathRenderer({
   );
 }
 
-export default function LearnPathRenderer() {
+export default function LearnPathVisualRenderer({
+  setMarkdownUrl,
+}: {
+  setMarkdownUrl: (url: string) => void;
+}) {
   const [path, setPath] = useState<Path | null>(null);
   const [maxDimensions, setMaxDimensions] = useState<{
     maxX: number;
@@ -182,12 +214,13 @@ export default function LearnPathRenderer() {
   }, []);
 
   return (
-    <div className="h-[40rem] w-[50rem] overflow-scroll border-2 border-secondary border-opacity-20 rounded-2xl p-5 pt-16 select-none relative">
+    <div className="h-[100%] w-[100%] overflow-scroll border-2 border-secondary border-opacity-20 rounded-2xl p-5 pt-16 select-none relative">
       <h3 className="text-center text-2xl font-semibold text-secondary absolute left-0 right-0 top-2">
         {path?.title}
       </h3>
       <PathRenderer
         path={path}
+        setMarkdownUrl={setMarkdownUrl}
         width={maxDimensions.maxX}
         height={maxDimensions.maxY}
       />

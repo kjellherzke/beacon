@@ -9,3 +9,43 @@
 html {
   @apply text-primary bg-background;
 }
+
+h1 {
+  @apply text-2xl font-bold mb-4;
+}
+
+h2 {
+  @apply text-xl font-bold mb-3;
+}
+
+h3 {
+  @apply text-lg font-bold mb-2;
+}
+
+h4 {
+  @apply text-lg font-bold mb-2;
+}
+
+p {
+  @apply mb-1;
+}
+
+ul {
+  @apply list-disc list-inside my-2;
+}
+
+ul li {
+  @apply pl-4;
+}
+
+code {
+  @apply bg-secondary bg-opacity-15 py-0.5 px-2 rounded-xl font-medium;
+}
+
+pre code {
+  @apply bg-transparent p-0 rounded-none;
+}
+
+pre {
+  @apply bg-secondary bg-opacity-15 py-2 px-4 rounded-xl my-3;
+}

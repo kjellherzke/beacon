@@ -1,10 +1,11 @@
 {
-  "title": "General Info",
+  "title": "Experimental Learning Path",
   "nodes": [
     {
-      "name": "Welcome, this is a note.",
+      "name": "Welcome, this is a note!!!",
       "x": 0,
       "y": 0,
+      "markdownUrl": "/general.md",
       "nodes": [
         {
           "name": "I am a child.",
@@ -34,6 +35,16 @@
           "name": "I am a second note.",
           "x": 400,
           "y": 100
+        },
+        {
+          "name": "OffsetX",
+          "x": 600,
+          "y": 100
+        },
+        {
+          "name": "Offset Y",
+          "x": 600,
+          "y": 400
         }
       ]
     }
