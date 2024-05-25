@@ -1,21 +1,24 @@
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import Test from "./assets/md/test.md";
+import { useState } from "react";
+import LearnPathMarkdownPreviewer from "./components/learningpath/MarkdownPreviewer";
+import LearnPathVisualRenderer from "./components/learningpath/Visualizer";
 
 function App() {
+  const [markdownUrl, setMarkdownUrl] = useState<string | null>(null);
+
   return (
-    <>
-      <div className="flex items-center justify-between p-4 mb-4 bg-bg border-b border-b-border">
-        <div className="flex space-x-2 items-center">
-          <img src="/static/beacon-logo.svg" className="h-6" />
-          <span className="font-bold text-lg">beacon</span>
+    <div className="pt-12 px-16">
+      <div className="flex items-center justify-between mb-12">
+        <div className="flex items-center space-x-2">
+          <img src="/logo-512x512.png" className="w-8 h-8" />
+          <h1 className="text-secondary font-bold text-2xl">beacon</h1>
         </div>
       </div>
-      <div className="px-4">
-        <p className="text-xl">Below is an example of markdown</p>
-        <Markdown remarkPlugins={[remarkGfm]} children={Test} />
+      <p className="text-xl mb-8 font-bold">Hello, traveller!</p>
+      <div className="flex justify-between space-x-2 h-[40rem]">
+        <LearnPathVisualRenderer setMarkdownUrl={setMarkdownUrl} />
+        <LearnPathMarkdownPreviewer markdownUrl={markdownUrl} />
       </div>
-    </>
+    </div>
   );
 }
 

@@ -2,13 +2,15 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
+    fontFamily: {
+      sans: "Space Grotesk",
+    },
+
     extend: {
       colors: {
-        primary: "#e6edf3",
-        secondary: "#848d97",
-        bg: "#010409",
-        base: "#0d1117",
-        border: "#30363d",
+        primary: "#FFFFFF",
+        secondary: "#A8A8A8",
+        background: "#111111",
       },
     },
   },
