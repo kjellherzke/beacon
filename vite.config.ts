@@ -15,5 +15,7 @@ export default defineConfig({
       },
     },
   ],
+  base: "/beacon/",
+
   // assetsInclude: ["**/*md"],
 });

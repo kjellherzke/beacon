@@ -48,7 +48,10 @@ export default function LearnPathMarkdownPreviewer({
     const absolutePath = "/public/static/learningpath/" + relativePath;
 
     if (modules[absolutePath])
-      modules[absolutePath]().then((mod: any) => setMarkdown(mod.default));
+      modules[absolutePath]().then((mod: any) => {
+        setMarkdown(mod.default);
+        console.log(mod);
+      });
     else setMarkdown(errorMessage);
   }, [markdownUrl]);
 
