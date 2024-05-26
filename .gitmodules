@@ -1,4 +1,4 @@
 [submodule "public/content"]
 	path = public/content
-  url = git@github.com:kjellherzke/beacon-content.git
+  url = https://github.com/kjellherzke/beacon-content.git
   branch = main
