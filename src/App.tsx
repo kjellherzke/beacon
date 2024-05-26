@@ -1,10 +1,6 @@
-import { useState } from "react";
-import LearnPathMarkdownPreviewer from "./components/learningpath/MarkdownPreviewer";
-import LearnPathVisualRenderer from "./components/learningpath/Visualizer";
+import LearningPath from "./components/LearningPath";
 
 function App() {
-  const [markdownUrl, setMarkdownUrl] = useState<string | null>(null);
-
   return (
     <div className="pt-12 px-16">
       <div className="flex items-center justify-between mb-12">
@@ -14,10 +10,7 @@ function App() {
         </div>
       </div>
       <p className="text-xl mb-8 font-bold">Hello, traveller!</p>
-      <div className="flex justify-between space-x-2 h-[40rem]">
-        <LearnPathVisualRenderer setMarkdownUrl={setMarkdownUrl} />
-        <LearnPathMarkdownPreviewer markdownUrl={markdownUrl} />
-      </div>
+      <LearningPath />
     </div>
   );
 }
