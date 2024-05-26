@@ -1,5 +1,5 @@
 import Markdown from "markdown-to-jsx";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 //
 // NEW COMPONENT
@@ -28,42 +28,19 @@ function SyntaxHighlightedCode({ ...props }) {
 const errorMessage = "Sorry, we could not load this.";
 
 export default function LearnPathMarkdownPreviewer({
-  markdownUrl,
+  markdown,
 }: {
-  markdownUrl: string | null;
+  markdown: string | null;
 }) {
-  const [markdown, setMarkdown] = useState(errorMessage);
-
-  useEffect(() => {
-    // TODO: This has to be changed later... AND IS NOT OPTIMAL!!!
-    const modules = import.meta.glob("/public/content/learningpaths/*.md");
-    /*   for (const path in modules) {
-      console.log(path);
-      modules[path]().then((mod) => setMarkdown(mod.default));
-    } */
-
-    const relativePath = markdownUrl?.startsWith("/")
-      ? markdownUrl.slice(1)
-      : markdownUrl;
-    const absolutePath = "/public/content/learningpaths/" + relativePath;
-
-    if (modules[absolutePath])
-      modules[absolutePath]().then((mod: any) => {
-        setMarkdown(mod.default);
-        console.log(mod);
-      });
-    else setMarkdown(errorMessage);
-  }, [markdownUrl]);
-
   return (
     <div className="h-full w-full overflow-scroll border-2 border-secondary border-opacity-20 rounded-2xl p-4">
       <Markdown
         options={{
           overrides: { code: SyntaxHighlightedCode },
-          disableParsingRawHTML: true,
+          // disableParsingRawHTML: true,
         }}
       >
-        {markdown}
+        {markdown || errorMessage}
       </Markdown>
     </div>
   );

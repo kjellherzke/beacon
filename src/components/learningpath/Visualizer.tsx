@@ -1,15 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 // Idea is to have a router for all files under that path and then display them:
 // - Nodes can have subnodes
 // - Nodes can have alternatively (preferred) node url, so that the node itself proposes a new node list
-//
+// - BUT: Nodes can only have either a markdown or a new node url, whereas Node Urls have priority
 
 const nodeHeight = 42;
 const nodeWidth = (str: string) => 17 + str.length * 10;
 
-interface Path {
+export interface Path {
   title: string;
+  markdownUrl?: string;
   nodes?: PathNode[];
 }
 
@@ -21,22 +22,33 @@ interface PathNode {
   width: number;
   height: number;
   markdownUrl: string;
+  nodeUrl: string;
   nodes?: PathNode[];
 }
 
 const generationColor = (generation: number) =>
   generation == 0 ? "#F8E16C" : generation == 1 ? "#00C49A" : "#156064";
 
+const toMarkdownUrl = (nodeUrl: string) =>
+  nodeUrl.substring(0, nodeUrl.length - 4) + "md";
+
 function SingleNode({
   data,
   setMarkdownUrl,
+  setNodeUrl,
 }: {
   data: PathNode;
   setMarkdownUrl: (url: string) => void;
+  setNodeUrl: (url: string) => void;
 }) {
   return (
     <div
-      onClick={() => setMarkdownUrl(data.markdownUrl)}
+      onClick={() =>
+        data?.nodeUrl
+          ? (setNodeUrl(data.nodeUrl),
+            setMarkdownUrl(toMarkdownUrl(data.nodeUrl)))
+          : data?.markdownUrl && setMarkdownUrl(data.markdownUrl)
+      }
       className="py-2 px-4 border-2 rounded-2xl bg-background hover:scale-105 hover:cursor-pointer transition-all whitespace-nowrap"
       style={{
         position: "absolute",
@@ -94,19 +106,26 @@ function Node({
   data,
   from,
   setMarkdownUrl,
+  setNodeUrl,
 }: {
   data: PathNode;
   from: PathNode | null;
   setMarkdownUrl: (url: string) => void;
+  setNodeUrl: (url: string) => void;
 }) {
   return (
     <div>
-      <SingleNode setMarkdownUrl={setMarkdownUrl} data={data} />
+      <SingleNode
+        setMarkdownUrl={setMarkdownUrl}
+        setNodeUrl={setNodeUrl}
+        data={data}
+      />
       {useMemo(
         () =>
           data.nodes?.map((node, i) => (
             <Node
               setMarkdownUrl={setMarkdownUrl}
+              setNodeUrl={setNodeUrl}
               key={i}
               data={node}
               from={data}
@@ -122,11 +141,13 @@ function Node({
 function PathRenderer({
   path,
   setMarkdownUrl,
+  setNodeUrl,
   width,
   height,
 }: {
   path: Path | null;
   setMarkdownUrl: (url: string) => void;
+  setNodeUrl: (url: string) => void;
   width: number;
   height: number;
 }) {
@@ -137,6 +158,7 @@ function PathRenderer({
           path?.nodes?.map((node, i, elements) => (
             <Node
               setMarkdownUrl={setMarkdownUrl}
+              setNodeUrl={setNodeUrl}
               key={i}
               data={node}
               from={elements[i - 1] || null}
@@ -148,81 +170,80 @@ function PathRenderer({
   );
 }
 
+const recursiveChangeNodes = (
+  nodes: PathNode[],
+  generation: number,
+): PathNode[] | undefined =>
+  nodes?.map((n) => ({
+    ...n,
+    generation,
+    height: nodeHeight,
+    width: nodeWidth(n.name),
+    nodes: n.nodes ? recursiveChangeNodes(n.nodes, generation + 1) : undefined,
+  }));
+
+const calculateMaxDimensions = (
+  nodes: PathNode[] | undefined,
+): { maxX: number; maxY: number } | null => {
+  if (!nodes) return null;
+
+  let maxX = 0;
+  let maxY = 0;
+
+  const updateDimensions = (node: PathNode) => {
+    if (node.x + node.width > maxX) {
+      maxX = node.x + node.width;
+    }
+    if (node.y + node.height > maxY) {
+      maxY = node.y + node.height;
+    }
+    node.nodes?.forEach(updateDimensions);
+  };
+
+  nodes.forEach(updateDimensions);
+  return { maxX, maxY };
+};
+
+// TODO: Might lead to errors
+export const manipulatePath = (
+  path: Path | null,
+): [Path | null, { maxX: number; maxY: number } | null] => {
+  if (!path) return [null, null];
+  if (!path.nodes) return [path, null];
+
+  const pathNew = { ...path, nodes: recursiveChangeNodes(path.nodes, 0) };
+  const dimensions = calculateMaxDimensions(pathNew.nodes);
+  return [pathNew, dimensions];
+};
+
 export default function LearnPathVisualRenderer({
   setMarkdownUrl,
+  setNodeUrl,
+  maxDimensions,
+  path,
 }: {
   setMarkdownUrl: (url: string) => void;
-}) {
-  const [path, setPath] = useState<Path | null>(null);
-  const [maxDimensions, setMaxDimensions] = useState<{
+  setNodeUrl: (url: string) => void;
+  maxDimensions: {
     maxX: number;
     maxY: number;
-  }>({ maxX: 0, maxY: 0 });
-
-  useEffect(() => {
-    const recursiveChangeNodes = (
-      nodes: PathNode[],
-      generation: number,
-    ): PathNode[] | undefined =>
-      nodes?.map((n) => ({
-        ...n,
-        generation,
-        height: nodeHeight,
-        width: nodeWidth(n.name),
-        nodes: n.nodes
-          ? recursiveChangeNodes(n.nodes, generation + 1)
-          : undefined,
-      }));
-
-    const calculateMaxDimensions = (
-      nodes: PathNode[] | undefined,
-    ): { maxX: number; maxY: number } | null => {
-      if (!nodes) return null;
-
-      let maxX = 0;
-      let maxY = 0;
-
-      const updateDimensions = (node: PathNode) => {
-        if (node.x + node.width > maxX) {
-          maxX = node.x + node.width;
-        }
-        if (node.y + node.height > maxY) {
-          maxY = node.y + node.height;
-        }
-        node.nodes?.forEach(updateDimensions);
-      };
-
-      nodes.forEach(updateDimensions);
-      return { maxX, maxY };
-    };
-
-    const manipulatePath = (path: Path | null): Path | null => {
-      if (!path) return null;
-      if (!path.nodes) return path;
-
-      const pathNew = { ...path, nodes: recursiveChangeNodes(path.nodes, 0) };
-      const dimensions = calculateMaxDimensions(pathNew.nodes);
-      if (dimensions) setMaxDimensions(dimensions);
-      return pathNew;
-    };
-
-    // TODO: This has to be changed later...
-    const modules = import.meta.glob("/public/content/learningpaths/*.json");
-    for (const path in modules) {
-      modules[path]().then((mod) => setPath(manipulatePath(mod as Path)));
-    }
-  }, []);
-
+  } | null;
+  path: Path | null;
+}) {
   return (
     <div className="h-[100%] w-[100%] overflow-scroll border-2 border-secondary border-opacity-20 rounded-2xl p-5 pt-16 select-none relative">
-      <h3 className="text-center text-2xl font-semibold text-secondary absolute left-0 right-0 top-2">
+      <h3
+        onClick={() => path?.markdownUrl && setMarkdownUrl(path.markdownUrl)}
+        className="text-center text-2xl font-semibold text-secondary absolute left-0 right-0 top-2 hover:cursor-pointer"
+      >
         {path?.title}
       </h3>
       <PathRenderer
         path={path}
         setMarkdownUrl={setMarkdownUrl}
-        width={maxDimensions.maxX}
-        height={maxDimensions.maxY}
+        setNodeUrl={setNodeUrl}
+        width={maxDimensions?.maxX || 100}
+        height={maxDimensions?.maxY || 100}
       />
     </div>
   );
