@@ -22,9 +22,12 @@ export default function Main() {
     const modules = import.meta.glob("/public/content/learningpaths/**/*.json");
     const absolutePath = getAbsolutePath(nodeUrl);
 
+    console.log("Nodes reload:", modules, absolutePath);
+
     if (modules[absolutePath]) {
       modules[absolutePath]().then((mod) => {
         setPath(manipulatePath(mod as Path));
+        console.log("Node path:", path);
       });
     }
   }, [nodeUrl]);
@@ -33,7 +36,7 @@ export default function Main() {
     const modules = import.meta.glob("/public/content/learningpaths/**/*.md");
     const absolutePath = getAbsolutePath(markdownUrl);
 
-    console.log("rerere...", modules, absolutePath);
+    console.log("Markdown reload:", modules, absolutePath);
 
     if (modules[absolutePath]) {
       modules[absolutePath]().then((mod: any) => {

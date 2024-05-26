@@ -21,8 +21,8 @@ interface PathNode {
   y: number;
   width: number;
   height: number;
-  markdownUrl: string;
-  nodeUrl: string;
+  markdownUrl?: string;
+  nodeUrl?: string;
   nodes?: PathNode[];
 }
 
@@ -43,12 +43,14 @@ function SingleNode({
 }) {
   return (
     <div
-      onClick={() =>
-        data?.nodeUrl
-          ? (setNodeUrl(data.nodeUrl),
-            setMarkdownUrl(toMarkdownUrl(data.nodeUrl)))
-          : data?.markdownUrl && setMarkdownUrl(data.markdownUrl)
-      }
+      onClick={() => {
+        if (data?.nodeUrl) {
+          setNodeUrl(data.nodeUrl);
+          setMarkdownUrl(toMarkdownUrl(data.nodeUrl));
+        } else if (data?.markdownUrl) {
+          setMarkdownUrl(data.markdownUrl);
+        }
+      }}
       className="py-2 px-4 border-2 rounded-2xl bg-background hover:scale-105 hover:cursor-pointer transition-all whitespace-nowrap"
       style={{
         position: "absolute",
@@ -231,7 +233,10 @@ export default function LearnPathVisualRenderer({
   path: Path | null;
 }) {
   return (
-    <div className="h-[100%] w-[100%] overflow-scroll border-2 border-secondary border-opacity-20 rounded-2xl p-5 pt-16 select-none relative">
+    <div
+      key={JSON.stringify(path)}
+      className="h-[100%] w-[100%] overflow-scroll border-2 border-secondary border-opacity-20 rounded-2xl p-5 pt-16 select-none relative"
+    >
       <h3
         onClick={() => path?.markdownUrl && setMarkdownUrl(path.markdownUrl)}
         className="text-center text-2xl font-semibold text-secondary absolute left-0 right-0 top-2 hover:cursor-pointer"
