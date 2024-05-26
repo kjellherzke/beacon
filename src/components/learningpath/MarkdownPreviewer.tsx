@@ -36,7 +36,7 @@ export default function LearnPathMarkdownPreviewer({
 
   useEffect(() => {
     // TODO: This has to be changed later... AND IS NOT OPTIMAL!!!
-    const modules = import.meta.glob("/public/static/learningpath/*.md");
+    const modules = import.meta.glob("/public/content/learningpaths/*.md");
     /*   for (const path in modules) {
       console.log(path);
       modules[path]().then((mod) => setMarkdown(mod.default));
@@ -45,7 +45,7 @@ export default function LearnPathMarkdownPreviewer({
     const relativePath = markdownUrl?.startsWith("/")
       ? markdownUrl.slice(1)
       : markdownUrl;
-    const absolutePath = "/public/static/learningpath/" + relativePath;
+    const absolutePath = "/public/content/learningpaths/" + relativePath;
 
     if (modules[absolutePath])
       modules[absolutePath]().then((mod: any) => {

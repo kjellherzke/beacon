@@ -207,7 +207,7 @@ export default function LearnPathVisualRenderer({
     };
 
     // TODO: This has to be changed later...
-    const modules = import.meta.glob("/public/static/learningpath/*.json");
+    const modules = import.meta.glob("/public/content/learningpaths/*.json");
     for (const path in modules) {
       modules[path]().then((mod) => setPath(manipulatePath(mod as Path)));
     }

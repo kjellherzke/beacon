@@ -1,0 +1,3 @@
+[submodule "public/content"]
+	path = public/content
+	url = git@github.com:kjellherzke/beacon-content.git
