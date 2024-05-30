@@ -1,12 +1,7 @@
-import { useMemo } from "react";
-
 // Idea is to have a router for all files under that path and then display them:
 // - Nodes can have subnodes
 // - Nodes can have alternatively (preferred) node url, so that the node itself proposes a new node list
 // - BUT: Nodes can only have either a markdown or a new node url, whereas Node Urls have priority
-
-const nodeHeight = 42;
-const nodeWidth = (str: string) => 17 + str.length * 10;
 
 export interface Path {
   title: string;
@@ -14,7 +9,7 @@ export interface Path {
   nodes?: PathNode[];
 }
 
-interface PathNode {
+export interface PathNode {
   name: string;
   generation: number;
   x: number;
@@ -122,101 +117,19 @@ function Node({
         setNodeUrl={setNodeUrl}
         data={data}
       />
-      {useMemo(
-        () =>
-          data.nodes?.map((node, i) => (
-            <Node
-              setMarkdownUrl={setMarkdownUrl}
-              setNodeUrl={setNodeUrl}
-              key={i}
-              data={node}
-              from={data}
-            />
-          )),
-        [],
-      )}
+      {data.nodes?.map((node, i) => (
+        <Node
+          setMarkdownUrl={setMarkdownUrl}
+          setNodeUrl={setNodeUrl}
+          key={i}
+          data={node}
+          from={data}
+        />
+      ))}
       {from && <NodeLine data={data} from={from} />}
     </div>
   );
 }
-
-function PathRenderer({
-  path,
-  setMarkdownUrl,
-  setNodeUrl,
-  width,
-  height,
-}: {
-  path: Path | null;
-  setMarkdownUrl: (url: string) => void;
-  setNodeUrl: (url: string) => void;
-  width: number;
-  height: number;
-}) {
-  return (
-    <div className="absolute w-full h-full" style={{ width, height }}>
-      {useMemo(
-        () =>
-          path?.nodes?.map((node, i, elements) => (
-            <Node
-              setMarkdownUrl={setMarkdownUrl}
-              setNodeUrl={setNodeUrl}
-              key={i}
-              data={node}
-              from={elements[i - 1] || null}
-            />
-          )),
-        [path],
-      )}
-    </div>
-  );
-}
-
-const recursiveChangeNodes = (
-  nodes: PathNode[],
-  generation: number,
-): PathNode[] | undefined =>
-  nodes?.map((n) => ({
-    ...n,
-    generation,
-    height: nodeHeight,
-    width: nodeWidth(n.name),
-    nodes: n.nodes ? recursiveChangeNodes(n.nodes, generation + 1) : undefined,
-  }));
-
-const calculateMaxDimensions = (
-  nodes: PathNode[] | undefined,
-): { maxX: number; maxY: number } | null => {
-  if (!nodes) return null;
-
-  let maxX = 0;
-  let maxY = 0;
-
-  const updateDimensions = (node: PathNode) => {
-    if (node.x + node.width > maxX) {
-      maxX = node.x + node.width;
-    }
-    if (node.y + node.height > maxY) {
-      maxY = node.y + node.height;
-    }
-    node.nodes?.forEach(updateDimensions);
-  };
-
-  nodes.forEach(updateDimensions);
-  return { maxX, maxY };
-};
-
-// TODO: Might lead to errors
-export const manipulatePath = (
-  path: Path | null,
-): [Path | null, { maxX: number; maxY: number } | null] => {
-  if (!path) return [null, null];
-  if (!path.nodes) return [path, null];
-
-  const pathNew = { ...path, nodes: recursiveChangeNodes(path.nodes, 0) };
-  const dimensions = calculateMaxDimensions(pathNew.nodes);
-  return [pathNew, dimensions];
-};
 
 export default function LearnPathVisualRenderer({
   setMarkdownUrl,
@@ -243,13 +156,23 @@ export default function LearnPathVisualRenderer({
       >
         {path?.title}
       </h3>
-      <PathRenderer
-        path={path}
-        setMarkdownUrl={setMarkdownUrl}
-        setNodeUrl={setNodeUrl}
-        width={maxDimensions?.maxX || 100}
-        height={maxDimensions?.maxY || 100}
-      />
+      <div
+        className="absolute w-full h-full"
+        style={{
+          width: maxDimensions?.maxX || 100,
+          height: maxDimensions?.maxY || 100,
+        }}
+      >
+        {path?.nodes?.map((node, i, elements) => (
+          <Node
+            setMarkdownUrl={setMarkdownUrl}
+            setNodeUrl={setNodeUrl}
+            key={i}
+            data={node}
+            from={elements[i - 1] || null}
+          />
+        ))}
+      </div>
     </div>
   );
 }
