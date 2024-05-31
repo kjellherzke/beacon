@@ -152,12 +152,6 @@ export default function LearnPathVisualRenderer({
       key={JSON.stringify(path)}
       className="h-[100%] w-[100%] overflow-scroll border-2 border-secondary bg-background border-opacity-20 rounded-2xl p-5 pt-16 select-none relative"
     >
-      <h3
-        onClick={() => path?.markdownUrl && setMarkdownUrl(path.markdownUrl)}
-        className="text-center text-2xl font-semibold text-secondary absolute left-0 right-0 top-2 hover:cursor-pointer"
-      >
-        {path?.title}
-      </h3>
       <div
         className="absolute w-full h-full"
         style={{
