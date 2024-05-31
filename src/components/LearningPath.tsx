@@ -8,17 +8,41 @@ function Tab({
   isGraphFullView,
   setMarkdownOpen,
   isMarkdownOpen,
+  isUndoDisabled,
+  undoNodeLink,
 }: {
   setGraphFullView: (bool: boolean) => void;
   isGraphFullView: boolean;
   setMarkdownOpen: (bool: boolean) => void;
   isMarkdownOpen: boolean;
+  undoNodeLink: () => void;
+  isUndoDisabled: boolean;
 }) {
   return (
-    <div className="flex items-center space-x-2 absolute top-3 right-3">
+    <div className="flex items-center space-x-3 absolute top-3 right-3">
+      <button
+        onClick={() => undoNodeLink()}
+        disabled={isUndoDisabled}
+        className="border-2 bg-background text-secondary border-slate p-2.5 rounded-xl disabled:text-slate"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+          className="w-4 h-4"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+          />
+        </svg>
+      </button>
       <button
         onClick={() => setGraphFullView(!isGraphFullView)}
-        className="border-2 bg-background text-secondary border-slate p-2.5 rounded-2xl"
+        className="border-2 bg-background text-secondary border-slate p-2 rounded-xl"
       >
         {isGraphFullView ? (
           <svg
@@ -47,14 +71,14 @@ function Tab({
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6"
             />
           </svg>
         )}
       </button>
       <button
         onClick={() => setMarkdownOpen(!isMarkdownOpen)}
-        className="border-2 bg-background text-secondary border-slate p-2.5 rounded-2xl"
+        className="border-2 bg-background text-secondary border-slate p-2 rounded-xl"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -109,6 +133,20 @@ export default function Main() {
     [markdownUrl, modules],
   );
 
+  const [nodeUrlHistory, setNodeUrlHistory] = useState<string[]>([]);
+  const changeNode = (url: string) => {
+    setNodeUrlHistory((nodes) => [...nodes, nodeUrl]);
+    setNodeUrl(url);
+  };
+  const revertNode = () => {
+    if (nodeUrlHistory.length > 0) {
+      setNodeUrl(nodeUrlHistory[nodeUrlHistory.length - 1]);
+      const nodes = [...nodeUrlHistory];
+      nodes.pop();
+      setNodeUrlHistory(nodes);
+    }
+  };
+
   const [isGraphFullView, setGraphFullView] = useState(false);
   const [isMarkdownOpen, setMarkdownOpen] = useState(false);
 
@@ -132,7 +170,7 @@ export default function Main() {
       <LearnPathVisualRenderer
         path={node[0]}
         maxDimensions={node[1]}
-        setNodeUrl={setNodeUrl}
+        setNodeUrl={changeNode}
         setMarkdownUrl={setMarkdownUrl}
       />
       <LearnPathMarkdownPreviewer
@@ -145,6 +183,8 @@ export default function Main() {
         setGraphFullView={setGraphFullView}
         setMarkdownOpen={setMarkdownOpen}
         isMarkdownOpen={isMarkdownOpen}
+        isUndoDisabled={nodeUrlHistory.length == 0}
+        undoNodeLink={revertNode}
       />
     </div>
   );
