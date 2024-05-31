@@ -48,13 +48,13 @@ function SingleNode({
           setMarkdownUrl(data.markdownUrl);
         }
       }}
-      className="py-2 px-4 z-[1] border-2 rounded-2xl bg-background hover:scale-105 hover:cursor-pointer transition-all whitespace-nowrap"
+      className="py-2 px-4 z-[1] absolute border-2 rounded-2xl bg-background hover:scale-105 hover:cursor-pointer transition-all whitespace-nowrap"
       style={{
-        position: "absolute",
         left: data.x,
         top: data.y,
-        color: generationColor(data.generation),
-        borderColor: generationColor(data.generation),
+        color: generationColor(data.generation) + (data?.nodeUrl ? "" : "60"),
+        borderColor:
+          generationColor(data.generation) + (data?.nodeUrl ? "" : 60),
       }}
     >
       {data.name}
@@ -73,18 +73,29 @@ function NodeLine({ data, from }: { data: PathNode; from: PathNode }) {
         top: 0,
         left: 0,
         position: "absolute",
-        // zIndex: -1,
       }}
     >
       <defs>
         <linearGradient gradientUnits="userSpaceOnUse" id={gradientId}>
-          <stop offset="20%" stopColor={generationColor(from.generation)} />
+          <stop
+            offset="20%"
+            stopColor={
+              generationColor(from.generation) + (data?.nodeUrl ? "" : "60")
+            }
+          />
           <stop
             offset="50%"
-            stopColor={generationColor(from.generation + 1)}
+            stopColor={
+              generationColor(data.generation + 1) + (data?.nodeUrl ? "" : "60")
+            }
             opacity={0.2}
           />
-          <stop offset="80%" stopColor={generationColor(data.generation)} />
+          <stop
+            offset="80%"
+            stopColor={
+              generationColor(data.generation) + (data?.nodeUrl ? "" : "60")
+            }
+          />
         </linearGradient>
       </defs>
       <line
