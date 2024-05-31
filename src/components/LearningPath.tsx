@@ -103,6 +103,9 @@ export default function Main() {
   const [nodeUrl, setNodeUrl] = useState<string>("/index.json");
   const [markdownUrl, setMarkdownUrl] = useState<string>("/index.md");
 
+  const [isGraphFullView, setGraphFullView] = useState(false);
+  const [isMarkdownOpen, setMarkdownOpen] = useState(false);
+
   const modules = useMemo(() => {
     const importModules = import.meta.glob(
       "/public/content/learningpaths/**/*.{md,json}",
@@ -125,19 +128,21 @@ export default function Main() {
     [nodeUrl, modules],
   );
 
-  const markdown = useMemo(
-    () =>
-      modules(markdownUrl)
-        ? (modules(markdownUrl) as { default: string }).default
-        : null,
-    [markdownUrl, modules],
-  );
+  const markdown = useMemo(() => {
+    const md = modules(markdownUrl)
+      ? (modules(markdownUrl) as { default: string }).default
+      : null;
+    setMarkdownOpen(true);
+    return md;
+  }, [markdownUrl, modules]);
 
   const [nodeUrlHistory, setNodeUrlHistory] = useState<string[]>([]);
+
   const changeNode = (url: string) => {
     setNodeUrlHistory((nodes) => [...nodes, nodeUrl]);
     setNodeUrl(url);
   };
+
   const revertNode = () => {
     if (nodeUrlHistory.length > 0) {
       setNodeUrl(nodeUrlHistory[nodeUrlHistory.length - 1]);
@@ -146,9 +151,6 @@ export default function Main() {
       setNodeUrlHistory(nodes);
     }
   };
-
-  const [isGraphFullView, setGraphFullView] = useState(false);
-  const [isMarkdownOpen, setMarkdownOpen] = useState(false);
 
   return (
     <div
