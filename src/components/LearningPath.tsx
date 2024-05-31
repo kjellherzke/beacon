@@ -37,15 +37,43 @@ export default function Main() {
     [markdownUrl, modules],
   );
 
+  const [isGraphFullView, setGraphFullView] = useState(false);
   const [isMarkdownOpen, setMarkdownOpen] = useState(false);
 
+  /*    style={{
+        position: "fixed",
+        top: 4,
+        left: 4,
+        right: 4,
+        bottom: 4,
+        width: "auto",
+        height: "auto",
+      }} */
+
   return (
-    <div className="h-[40rem] relative">
+    <div
+      style={
+        isGraphFullView
+          ? {
+              position: "fixed",
+              top: 4,
+              left: 4,
+              right: 4,
+              bottom: 4,
+              width: "auto",
+              height: "auto",
+            }
+          : {}
+      }
+      className="h-[40rem] relative"
+    >
       <LearnPathVisualRenderer
         path={node[0]}
         maxDimensions={node[1]}
         setNodeUrl={setNodeUrl}
         setMarkdownUrl={setMarkdownUrl}
+        isGraphFullView={isGraphFullView}
+        setGraphFullView={setGraphFullView}
       />
       <LearnPathMarkdownPreviewer
         markdown={markdown}
