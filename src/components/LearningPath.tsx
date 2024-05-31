@@ -134,8 +134,6 @@ export default function Main() {
         maxDimensions={node[1]}
         setNodeUrl={setNodeUrl}
         setMarkdownUrl={setMarkdownUrl}
-        isGraphFullView={isGraphFullView}
-        setGraphFullView={setGraphFullView}
       />
       <LearnPathMarkdownPreviewer
         markdown={markdown}

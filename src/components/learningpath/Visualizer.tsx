@@ -138,8 +138,6 @@ export default function LearnPathVisualRenderer({
   setNodeUrl,
   maxDimensions,
   path,
-  isGraphFullView,
-  setGraphFullView,
 }: {
   setMarkdownUrl: (url: string) => void;
   setNodeUrl: (url: string) => void;
@@ -148,8 +146,6 @@ export default function LearnPathVisualRenderer({
     maxY: number;
   } | null;
   path: Path | null;
-  isGraphFullView: boolean;
-  setGraphFullView: (bool: boolean) => void;
 }) {
   return (
     <div
