@@ -3,6 +3,8 @@
 // - Nodes can have alternatively (preferred) node url, so that the node itself proposes a new node list
 // - BUT: Nodes can only have either a markdown or a new node url, whereas Node Urls have priority
 
+// import { useState } from "react";
+
 export interface Path {
   title: string;
   markdownUrl?: string;
@@ -136,6 +138,8 @@ export default function LearnPathVisualRenderer({
   setNodeUrl,
   maxDimensions,
   path,
+  isGraphFullView,
+  setGraphFullView,
 }: {
   setMarkdownUrl: (url: string) => void;
   setNodeUrl: (url: string) => void;
@@ -144,11 +148,13 @@ export default function LearnPathVisualRenderer({
     maxY: number;
   } | null;
   path: Path | null;
+  isGraphFullView: boolean;
+  setGraphFullView: (bool: boolean) => void;
 }) {
   return (
     <div
       key={JSON.stringify(path)}
-      className="h-[100%] w-[100%] overflow-scroll border-2 border-secondary border-opacity-20 rounded-2xl p-5 pt-16 select-none relative"
+      className="h-[100%] w-[100%] overflow-scroll border-2 border-secondary bg-background border-opacity-20 rounded-2xl p-5 pt-16 select-none relative"
     >
       <h3
         onClick={() => path?.markdownUrl && setMarkdownUrl(path.markdownUrl)}
@@ -156,6 +162,25 @@ export default function LearnPathVisualRenderer({
       >
         {path?.title}
       </h3>
+      <button
+        onClick={() => setGraphFullView(!isGraphFullView)}
+        className="absolute right-20 top-2.5 border-2 bg-background border-slate p-2.5 rounded-2xl"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-5 h-5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v1.5M16.5 3.75H18A2.25 2.25 0 0 1 20.25 6v1.5m0 9V18A2.25 2.25 0 0 1 18 20.25h-1.5m-9 0H6A2.25 2.25 0 0 1 3.75 18v-1.5M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+          />
+        </svg>
+      </button>
       <div
         className="absolute w-full h-full"
         style={{
