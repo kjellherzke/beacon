@@ -132,11 +132,15 @@ export default function Main() {
     const md = modules(markdownUrl)
       ? (modules(markdownUrl) as { default: string }).default
       : null;
-    setMarkdownOpen(true);
     return md;
   }, [markdownUrl, modules]);
 
   const [nodeUrlHistory, setNodeUrlHistory] = useState<string[]>([]);
+
+  const openNewMarkdown = (newMarkdownUrl: string) => {
+    setMarkdownUrl(newMarkdownUrl);
+    setMarkdownOpen(true);
+  };
 
   const changeNode = (url: string) => {
     setNodeUrlHistory((nodes) => [...nodes, nodeUrl]);
@@ -173,7 +177,7 @@ export default function Main() {
         path={node[0]}
         maxDimensions={node[1]}
         setNodeUrl={changeNode}
-        setMarkdownUrl={setMarkdownUrl}
+        setMarkdownUrl={openNewMarkdown}
       />
       <LearnPathMarkdownPreviewer
         markdown={markdown}
