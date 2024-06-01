@@ -9,6 +9,12 @@ export interface Path {
   title: string;
   markdownUrl?: string;
   nodes?: PathNode[];
+
+  // new
+  width: number;
+  height: number;
+  x: number;
+  y: number;
 }
 
 export interface PathNode {
@@ -58,23 +64,8 @@ function SingleNode({
       }}
     >
       <span>{data.name}</span>
-      {data?.nodeUrl ? (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-          className="w-4 h-4"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
-          />
-        </svg>
-      ) : (
-        data?.markdownUrl && (
+      {data.generation > 0 &&
+        (data?.nodeUrl ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -86,11 +77,27 @@ function SingleNode({
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+              d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
             />
           </svg>
-        )
-      )}
+        ) : (
+          data?.markdownUrl && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-4 h-4"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+              />
+            </svg>
+          )
+        ))}
     </div>
   );
 }
@@ -193,23 +200,37 @@ export default function LearnPathVisualRenderer({
       key={JSON.stringify(path)}
       className="h-[100%] w-[100%] overflow-scroll border-2 border-secondary bg-background border-opacity-20 rounded-2xl p-5 pt-16 select-none relative"
     >
-      <div
-        className="absolute w-full h-full"
-        style={{
-          width: maxDimensions?.maxX || 100,
-          height: maxDimensions?.maxY || 100,
-        }}
-      >
-        {path?.nodes?.map((node, i, elements) => (
+      {path ? (
+        <div
+          className="absolute w-full h-full"
+          style={{
+            width: maxDimensions?.maxX || 100,
+            height: maxDimensions?.maxY || 100,
+          }}
+        >
           <Node
             setMarkdownUrl={setMarkdownUrl}
             setNodeUrl={setNodeUrl}
-            key={i}
-            data={node}
-            from={elements[i - 1] || null}
+            data={{ ...path, name: path.title, generation: 0 }}
+            from={null}
           />
-        ))}
-      </div>
+          {path.nodes?.map((node, i, elements) => (
+            <Node
+              setMarkdownUrl={setMarkdownUrl}
+              setNodeUrl={setNodeUrl}
+              key={i}
+              data={node}
+              from={
+                i == 0
+                  ? { ...path, name: path.title, generation: 0 }
+                  : elements[i - 1]
+              }
+            />
+          ))}
+        </div>
+      ) : (
+        <p>Sorry</p>
+      )}
     </div>
   );
 }
