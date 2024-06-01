@@ -23,8 +23,9 @@ export interface PathNode {
   nodes?: PathNode[];
 }
 
-const generationColor = (generation: number) =>
-  generation == 0 ? "#F8E16C" : generation == 1 ? "#00C49A" : "#156064";
+const generationColor = (generation: number, isTransparent = false) =>
+  (generation == 0 ? "#F8E16C" : generation == 1 ? "#00C49A" : "#156064") +
+  (isTransparent ? "A0" : "");
 
 const toMarkdownUrl = (nodeUrl: string) =>
   nodeUrl.substring(0, nodeUrl.length - 4) + "md";
@@ -52,13 +53,12 @@ function SingleNode({
       style={{
         left: data.x,
         top: data.y,
-        color: generationColor(data.generation) + (data?.nodeUrl ? "" : "60"),
-        borderColor:
-          generationColor(data.generation) + (data?.nodeUrl ? "" : 60),
+        color: generationColor(data.generation, data?.nodeUrl == null),
+        borderColor: generationColor(data.generation, data?.nodeUrl == null),
       }}
     >
       <span>{data.name}</span>
-      {data?.nodeUrl && (
+      {data?.nodeUrl ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -70,9 +70,26 @@ function SingleNode({
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
+            d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
           />
         </svg>
+      ) : (
+        data?.markdownUrl && (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="w-4 h-4"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+            />
+          </svg>
+        )
       )}
     </div>
   );
@@ -95,22 +112,19 @@ function NodeLine({ data, from }: { data: PathNode; from: PathNode }) {
         <linearGradient gradientUnits="userSpaceOnUse" id={gradientId}>
           <stop
             offset="20%"
-            stopColor={
-              generationColor(from.generation) + (data?.nodeUrl ? "" : "60")
-            }
+            stopColor={generationColor(from.generation, data?.nodeUrl == null)}
           />
           <stop
             offset="50%"
-            stopColor={
-              generationColor(data.generation + 1) + (data?.nodeUrl ? "" : "60")
-            }
+            stopColor={generationColor(
+              data.generation + 1,
+              data?.nodeUrl == null,
+            )}
             opacity={0.2}
           />
           <stop
             offset="80%"
-            stopColor={
-              generationColor(data.generation) + (data?.nodeUrl ? "" : "60")
-            }
+            stopColor={generationColor(data.generation, data?.nodeUrl == null)}
           />
         </linearGradient>
       </defs>
