@@ -44,7 +44,14 @@ export const manipulatePath = (
   if (!path) return [null, null];
   if (!path.nodes) return [path, null];
 
-  const pathNew = { ...path, nodes: recursiveChangeNodes(path.nodes, 0) };
+  const pathNew: Path = {
+    ...path,
+    x: path.x || 0,
+    y: path.y || 0,
+    nodes: recursiveChangeNodes(path.nodes, 1),
+    width: nodeWidth(path.title),
+    height: nodeHeight,
+  };
   const dimensions = calculateMaxDimensions(pathNew.nodes);
   return [pathNew, dimensions];
 };
