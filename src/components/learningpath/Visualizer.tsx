@@ -3,7 +3,7 @@
 // - Nodes can have alternatively (preferred) node url, so that the node itself proposes a new node list
 // - BUT: Nodes can only have either a markdown or a new node url, whereas Node Urls have priority
 
-// import { useState } from "react";
+import tailwind from "../../../tailwind.config";
 
 export interface Path {
   title: string;
@@ -29,9 +29,10 @@ export interface PathNode {
   nodes?: PathNode[];
 }
 
-const generationColor = (generation: number, isTransparent = false) =>
-  (generation == 0 ? "#F8E16C" : generation == 1 ? "#00C49A" : "#156064") +
-  (isTransparent ? "A0" : "");
+const generationColor = (generation: number): string =>
+  (tailwind.theme.extend.colors.visualGraphs as Record<string, string>)[
+    `generation${generation}`
+  ];
 
 const toMarkdownUrl = (nodeUrl: string) =>
   nodeUrl.substring(0, nodeUrl.length - 4) + "md";
@@ -59,11 +60,16 @@ function SingleNode({
       style={{
         left: data.x,
         top: data.y,
-        color: generationColor(data.generation, data?.nodeUrl == null),
-        borderColor: generationColor(data.generation, data?.nodeUrl == null),
-
-        // special styling for generation 0 (titles)
-        fontWeight: data.generation == 0 ? "bold" : "normal",
+        borderColor: generationColor(data.generation),
+        fontWeight: data.generation == 0 ? 500 : 400,
+        color:
+          data.generation == 0
+            ? tailwind.theme.extend.colors.background
+            : generationColor(data.generation),
+        backgroundColor:
+          data.generation == 0
+            ? generationColor(data.generation)
+            : tailwind.theme.extend.colors.background,
       }}
     >
       <span>{data.name}</span>
@@ -120,22 +126,13 @@ function NodeLine({ data, from }: { data: PathNode; from: PathNode }) {
     >
       <defs>
         <linearGradient gradientUnits="userSpaceOnUse" id={gradientId}>
-          <stop
-            offset="20%"
-            stopColor={generationColor(from.generation, data?.nodeUrl == null)}
-          />
+          <stop offset="20%" stopColor={generationColor(from.generation)} />
           <stop
             offset="50%"
-            stopColor={generationColor(
-              data.generation + 1,
-              data?.nodeUrl == null,
-            )}
+            stopColor={generationColor(data.generation + 1)}
             opacity={0.2}
           />
-          <stop
-            offset="80%"
-            stopColor={generationColor(data.generation, data?.nodeUrl == null)}
-          />
+          <stop offset="80%" stopColor={generationColor(data.generation)} />
         </linearGradient>
       </defs>
       <line
@@ -143,9 +140,11 @@ function NodeLine({ data, from }: { data: PathNode; from: PathNode }) {
         y1={from.y + from.height / 2}
         x2={data.x + data.width / 2}
         y2={data.y + data.height / 2}
-        strokeWidth={from.generation == 0 ? 7 : 5}
-        stroke={`url(#${gradientId})`}
-        strokeDasharray={data.generation > 1 ? "5,5" : "none"}
+        // strokeWidth={from.generation == 0 ? 7 : 5}
+        strokeWidth={5}
+        // stroke={`url(#${gradientId})`}
+        stroke={generationColor(data.generation)}
+        // strokeDasharray={data.generation > 1 ? "5,5" : "none"}
       />
     </svg>
   );
