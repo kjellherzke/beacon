@@ -113,10 +113,7 @@ function Tab({
   );
 }
 
-export default function Main() {
-  const nodeParam =
-    new URLSearchParams(window.location.search).get("node") || "/index";
-
+export default function Main({ nodeParam }: { nodeParam: string }) {
   const [nodeUrl, setNodeUrl] = useState<string>(nodeParam + ".json");
   const [markdownUrl, setMarkdownUrl] = useState<string>(nodeParam + ".md");
 
