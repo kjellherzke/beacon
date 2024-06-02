@@ -3,13 +3,15 @@ import LearnPathMarkdownPreviewer from "./learningpath/MarkdownPreviewer";
 import LearnPathVisualRenderer, { Path } from "./learningpath/Visualizer";
 import { manipulatePath } from "./learningpath/PathManipulation";
 
+const copyToClipboard = (text: string) => navigator.clipboard.writeText(text);
+
 function Tab({
   setGraphFullView,
   isGraphFullView,
   setMarkdownOpen,
   isMarkdownOpen,
-  isUndoDisabled,
   undoNodeLink,
+  isUndoDisabled,
 }: {
   setGraphFullView: (bool: boolean) => void;
   isGraphFullView: boolean;
@@ -37,6 +39,25 @@ function Tab({
             strokeLinecap="round"
             strokeLinejoin="round"
             d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
+          />
+        </svg>
+      </button>
+      <button
+        onClick={() => copyToClipboard(window.location.toString())}
+        className="border-2 bg-background text-secondary border-slate p-2 rounded-xl"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-5 h-5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"
           />
         </svg>
       </button>
@@ -100,8 +121,11 @@ function Tab({
 }
 
 export default function Main() {
-  const [nodeUrl, setNodeUrl] = useState<string>("/index.json");
-  const [markdownUrl, setMarkdownUrl] = useState<string>("/index.md");
+  const nodeParam =
+    new URLSearchParams(window.location.search).get("node") || "/index";
+
+  const [nodeUrl, setNodeUrl] = useState<string>(nodeParam + ".json");
+  const [markdownUrl, setMarkdownUrl] = useState<string>(nodeParam + ".md");
 
   const [isGraphFullView, setGraphFullView] = useState(false);
   const [isMarkdownOpen, setMarkdownOpen] = useState(false);
@@ -109,9 +133,7 @@ export default function Main() {
   const modules = useMemo(() => {
     const importModules = import.meta.glob(
       "/public/content/learningpaths/**/*.{md,json}",
-      {
-        eager: true,
-      },
+      { eager: true },
     );
     return (relativePath: string) =>
       importModules[
@@ -156,7 +178,7 @@ export default function Main() {
     }
   };
 
-  return (
+  return node[0] && node[1] ? (
     <div
       style={
         isGraphFullView
@@ -193,5 +215,9 @@ export default function Main() {
         undoNodeLink={revertNode}
       />
     </div>
+  ) : (
+    <p className="border border-secondary px-4 py-2 rounded-xl">
+      Sorry, but this visual graph could not be loaded.
+    </p>
   );
 }
