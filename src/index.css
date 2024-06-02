@@ -38,6 +38,10 @@ ul li {
   @apply pl-4;
 }
 
+a {
+  @apply text-blue-400 underline;
+}
+
 code {
   @apply bg-secondary bg-opacity-15 py-0.5 px-2 rounded-xl font-medium;
 }

@@ -61,6 +61,9 @@ function SingleNode({
         top: data.y,
         color: generationColor(data.generation, data?.nodeUrl == null),
         borderColor: generationColor(data.generation, data?.nodeUrl == null),
+
+        // special styling for generation 0 (titles)
+        fontWeight: data.generation == 0 ? "bold" : "normal",
       }}
     >
       <span>{data.name}</span>
@@ -140,8 +143,7 @@ function NodeLine({ data, from }: { data: PathNode; from: PathNode }) {
         y1={from.y + from.height / 2}
         x2={data.x + data.width / 2}
         y2={data.y + data.height / 2}
-        strokeWidth={4}
-        // stroke={generationColor(data.generation)}
+        strokeWidth={from.generation == 0 ? 7 : 5}
         stroke={`url(#${gradientId})`}
         strokeDasharray={data.generation > 1 ? "5,5" : "none"}
       />
@@ -211,7 +213,15 @@ export default function LearnPathVisualRenderer({
           <Node
             setMarkdownUrl={setMarkdownUrl}
             setNodeUrl={setNodeUrl}
-            data={{ ...path, name: path.title, generation: 0 }}
+            data={{
+              name: path.title,
+              generation: 0,
+              height: path.height,
+              width: path.width,
+              x: path.x,
+              y: path.y,
+              markdownUrl: path.markdownUrl,
+            }}
             from={null}
           />
           {path.nodes?.map((node, i, elements) => (
@@ -222,7 +232,15 @@ export default function LearnPathVisualRenderer({
               data={node}
               from={
                 i == 0
-                  ? { ...path, name: path.title, generation: 0 }
+                  ? {
+                      name: path.title,
+                      generation: 0,
+                      height: path.height,
+                      width: path.width,
+                      x: path.x,
+                      y: path.y,
+                      markdownUrl: path.markdownUrl,
+                    }
                   : elements[i - 1]
               }
             />
