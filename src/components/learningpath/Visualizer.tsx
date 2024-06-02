@@ -126,13 +126,8 @@ function NodeLine({ data, from }: { data: PathNode; from: PathNode }) {
     >
       <defs>
         <linearGradient gradientUnits="userSpaceOnUse" id={gradientId}>
-          <stop offset="20%" stopColor={generationColor(from.generation)} />
-          <stop
-            offset="50%"
-            stopColor={generationColor(data.generation + 1)}
-            opacity={0.2}
-          />
-          <stop offset="80%" stopColor={generationColor(data.generation)} />
+          <stop offset="40%" stopColor={generationColor(from.generation)} />
+          <stop offset="60%" stopColor={generationColor(data.generation)} />
         </linearGradient>
       </defs>
       <line
@@ -193,61 +188,57 @@ export default function LearnPathVisualRenderer({
   maxDimensions: {
     maxX: number;
     maxY: number;
-  } | null;
-  path: Path | null;
+  };
+  path: Path;
 }) {
   return (
     <div
       key={JSON.stringify(path)}
-      className="h-[100%] w-[100%] overflow-scroll border-2 border-secondary bg-background border-opacity-20 rounded-2xl p-5 pt-16 select-none relative"
+      className="h-[100%] w-[100%] overflow-scroll border-2 border-secondary bg-background border-opacity-20 rounded-2xl p-5 pt-20 select-none relative"
     >
-      {path ? (
-        <div
-          className="absolute w-full h-full"
-          style={{
-            width: maxDimensions?.maxX || 100,
-            height: maxDimensions?.maxY || 100,
+      <div
+        className="absolute w-full h-full"
+        style={{
+          width: maxDimensions?.maxX || 100,
+          height: maxDimensions?.maxY || 100,
+        }}
+      >
+        <Node
+          setMarkdownUrl={setMarkdownUrl}
+          setNodeUrl={setNodeUrl}
+          data={{
+            name: path.title,
+            generation: 0,
+            height: path.height,
+            width: path.width,
+            x: path.x,
+            y: path.y,
+            markdownUrl: path.markdownUrl,
           }}
-        >
+          from={null}
+        />
+        {path.nodes?.map((node, i, elements) => (
           <Node
             setMarkdownUrl={setMarkdownUrl}
             setNodeUrl={setNodeUrl}
-            data={{
-              name: path.title,
-              generation: 0,
-              height: path.height,
-              width: path.width,
-              x: path.x,
-              y: path.y,
-              markdownUrl: path.markdownUrl,
-            }}
-            from={null}
+            key={i}
+            data={node}
+            from={
+              i == 0
+                ? {
+                    name: path.title,
+                    generation: 0,
+                    height: path.height,
+                    width: path.width,
+                    x: path.x,
+                    y: path.y,
+                    markdownUrl: path.markdownUrl,
+                  }
+                : elements[i - 1]
+            }
           />
-          {path.nodes?.map((node, i, elements) => (
-            <Node
-              setMarkdownUrl={setMarkdownUrl}
-              setNodeUrl={setNodeUrl}
-              key={i}
-              data={node}
-              from={
-                i == 0
-                  ? {
-                      name: path.title,
-                      generation: 0,
-                      height: path.height,
-                      width: path.width,
-                      x: path.x,
-                      y: path.y,
-                      markdownUrl: path.markdownUrl,
-                    }
-                  : elements[i - 1]
-              }
-            />
-          ))}
-        </div>
-      ) : (
-        <p>Sorry</p>
-      )}
+        ))}
+      </div>
     </div>
   );
 }
