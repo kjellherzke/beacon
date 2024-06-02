@@ -38,8 +38,13 @@ ul li {
   @apply pl-4;
 }
 
+button,
 a {
-  @apply text-blue-400 underline;
+  @apply border-2 border-slate bg-background p-2 rounded-xl text-secondary disabled:text-slate hover:bg-secondary hover:text-background focus:bg-primary focus:text-background transition-all;
+}
+
+a {
+  @apply px-2 py-0.5;
 }
 
 code {

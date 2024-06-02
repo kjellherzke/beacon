@@ -12,6 +12,7 @@ function Tab({
   isMarkdownOpen,
   undoNodeLink,
   isUndoDisabled,
+  linkUrl,
 }: {
   setGraphFullView: (bool: boolean) => void;
   isGraphFullView: boolean;
@@ -19,13 +20,14 @@ function Tab({
   isMarkdownOpen: boolean;
   undoNodeLink: () => void;
   isUndoDisabled: boolean;
+  linkUrl: string;
 }) {
   return (
     <div className="flex items-center space-x-3 absolute top-3 right-3">
       <button
         onClick={() => undoNodeLink()}
         disabled={isUndoDisabled}
-        className="border-2 bg-background text-secondary border-slate p-2.5 rounded-xl disabled:text-slate"
+        className="p-2.5"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -42,10 +44,7 @@ function Tab({
           />
         </svg>
       </button>
-      <button
-        onClick={() => copyToClipboard(window.location.toString())}
-        className="border-2 bg-background text-secondary border-slate p-2 rounded-xl"
-      >
+      <button onClick={() => copyToClipboard(linkUrl)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -61,10 +60,7 @@ function Tab({
           />
         </svg>
       </button>
-      <button
-        onClick={() => setGraphFullView(!isGraphFullView)}
-        className="border-2 bg-background text-secondary border-slate p-2 rounded-xl"
-      >
+      <button onClick={() => setGraphFullView(!isGraphFullView)}>
         {isGraphFullView ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -97,10 +93,7 @@ function Tab({
           </svg>
         )}
       </button>
-      <button
-        onClick={() => setMarkdownOpen(!isMarkdownOpen)}
-        className="border-2 bg-background text-secondary border-slate p-2 rounded-xl"
-      >
+      <button onClick={() => setMarkdownOpen(!isMarkdownOpen)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -120,10 +113,7 @@ function Tab({
   );
 }
 
-export default function Main() {
-  const nodeParam =
-    new URLSearchParams(window.location.search).get("node") || "/index";
-
+export default function Main({ nodeParam }: { nodeParam: string }) {
   const [nodeUrl, setNodeUrl] = useState<string>(nodeParam + ".json");
   const [markdownUrl, setMarkdownUrl] = useState<string>(nodeParam + ".md");
 
@@ -213,6 +203,12 @@ export default function Main() {
         isMarkdownOpen={isMarkdownOpen}
         isUndoDisabled={nodeUrlHistory.length == 0}
         undoNodeLink={revertNode}
+        linkUrl={
+          window.location.origin +
+          window.location.pathname +
+          "?node=" +
+          nodeUrl.split(".json")[0]
+        }
       />
     </div>
   ) : (
