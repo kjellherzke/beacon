@@ -6,16 +6,12 @@ import { manipulatePath } from "./learningpath/PathManipulation";
 const copyToClipboard = (text: string) => navigator.clipboard.writeText(text);
 
 function Tab({
-  setGraphFullView,
-  isGraphFullView,
   setMarkdownOpen,
   isMarkdownOpen,
   undoNodeLink,
   isUndoDisabled,
   linkUrl,
 }: {
-  setGraphFullView: (bool: boolean) => void;
-  isGraphFullView: boolean;
   setMarkdownOpen: (bool: boolean) => void;
   isMarkdownOpen: boolean;
   undoNodeLink: () => void;
@@ -59,39 +55,6 @@ function Tab({
             d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"
           />
         </svg>
-      </button>
-      <button onClick={() => setGraphFullView(!isGraphFullView)}>
-        {isGraphFullView ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM13.5 10.5h-6"
-            />
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-5 h-5"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6"
-            />
-          </svg>
-        )}
       </button>
       <button onClick={() => setMarkdownOpen(!isMarkdownOpen)}>
         <svg
@@ -143,7 +106,6 @@ export default function Main({ nodeParam }: { nodeParam: string }) {
   const [nodeUrl, setNodeUrl] = useState<string>(nodeParam + ".json");
   const [markdownUrl, setMarkdownUrl] = useState<string>(nodeParam + ".md");
 
-  const [isGraphFullView, setGraphFullView] = useState(false);
   const [isMarkdownOpen, setMarkdownOpen] = useState(false);
 
   const modules = useMemo(() => {
@@ -195,22 +157,7 @@ export default function Main({ nodeParam }: { nodeParam: string }) {
   };
 
   return node[0] && node[1] ? (
-    <div
-      style={
-        isGraphFullView
-          ? {
-              position: "fixed",
-              top: 4,
-              left: 4,
-              right: 4,
-              bottom: 4,
-              width: "auto",
-              height: "auto",
-            }
-          : {}
-      }
-      className="h-[40rem] relative"
-    >
+    <div className="fixed top-4 left-4 right-4 bottom-4">
       <LearnPathVisualRenderer
         path={node[0]}
         maxDimensions={node[1]}
@@ -223,8 +170,6 @@ export default function Main({ nodeParam }: { nodeParam: string }) {
         setOpen={setMarkdownOpen}
       />
       <Tab
-        isGraphFullView={isGraphFullView}
-        setGraphFullView={setGraphFullView}
         setMarkdownOpen={setMarkdownOpen}
         isMarkdownOpen={isMarkdownOpen}
         isUndoDisabled={nodeUrlHistory.length == 0}
@@ -239,7 +184,7 @@ export default function Main({ nodeParam }: { nodeParam: string }) {
       <Footer />
     </div>
   ) : (
-    <p className="border border-secondary px-4 py-2 rounded-xl">
+    <p className="border border-red-400 text-red-400 px-4 py-2 m-4 rounded-xl">
       Sorry, but this visual graph could not be loaded.
     </p>
   );
