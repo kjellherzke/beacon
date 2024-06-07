@@ -182,6 +182,7 @@ export default function LearnPathVisualRenderer({
   setNodeUrl,
   maxDimensions,
   path,
+  zoom,
 }: {
   setMarkdownUrl: (url: string) => void;
   setNodeUrl: (url: string) => void;
@@ -190,6 +191,7 @@ export default function LearnPathVisualRenderer({
     maxY: number;
   };
   path: Path;
+  zoom: number;
 }) {
   return (
     <div
@@ -199,6 +201,7 @@ export default function LearnPathVisualRenderer({
       <div
         className="absolute w-full h-full"
         style={{
+          // transform: `scale(${zoom})`,
           width: maxDimensions?.maxX || 100,
           height: maxDimensions?.maxY || 100,
         }}

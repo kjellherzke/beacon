@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import LearnPathMarkdownPreviewer from "./learningpath/MarkdownPreviewer";
 import LearnPathVisualRenderer, { Path } from "./learningpath/Visualizer";
 import { manipulatePath } from "./learningpath/PathManipulation";
@@ -11,11 +11,15 @@ function Tab({
   undoNodeLink,
   isUndoDisabled,
   linkUrl,
+  setVisualZoom,
+  zoomStep,
 }: {
   setMarkdownOpen: (bool: boolean) => void;
   isMarkdownOpen: boolean;
   undoNodeLink: () => void;
   isUndoDisabled: boolean;
+  setVisualZoom: Dispatch<SetStateAction<number>>;
+  zoomStep: number;
   linkUrl: string;
 }) {
   return (
@@ -53,6 +57,38 @@ function Tab({
             strokeLinecap="round"
             strokeLinejoin="round"
             d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"
+          />
+        </svg>
+      </button>
+      <button onClick={() => setVisualZoom((zoom: number) => zoom + zoomStep)}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-5 h-5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6"
+          />
+        </svg>
+      </button>
+      <button onClick={() => setVisualZoom((zoom: number) => zoom - zoomStep)}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-5 h-5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM13.5 10.5h-6"
           />
         </svg>
       </button>
@@ -106,6 +142,7 @@ export default function Main({ nodeParam }: { nodeParam: string }) {
   const [nodeUrl, setNodeUrl] = useState<string>(nodeParam + ".json");
   const [markdownUrl, setMarkdownUrl] = useState<string>(nodeParam + ".md");
 
+  const [visualZoom, setVisualZoom] = useState(1);
   const [isMarkdownOpen, setMarkdownOpen] = useState(false);
 
   const modules = useMemo(() => {
@@ -163,6 +200,7 @@ export default function Main({ nodeParam }: { nodeParam: string }) {
         maxDimensions={node[1]}
         setNodeUrl={changeNode}
         setMarkdownUrl={openNewMarkdown}
+        zoom={visualZoom}
       />
       <LearnPathMarkdownPreviewer
         markdown={markdown}
@@ -170,6 +208,8 @@ export default function Main({ nodeParam }: { nodeParam: string }) {
         setOpen={setMarkdownOpen}
       />
       <Tab
+        setVisualZoom={setVisualZoom}
+        zoomStep={0.1}
         setMarkdownOpen={setMarkdownOpen}
         isMarkdownOpen={isMarkdownOpen}
         isUndoDisabled={nodeUrlHistory.length == 0}
